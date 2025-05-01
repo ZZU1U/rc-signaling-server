@@ -1,0 +1,34 @@
+{
+  "name": "signaling-service",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@eslint/js": "^9.25.1",
+    "@stylistic/eslint-plugin": "^4.2.0",
+    "@types/bun": "latest",
+    "@types/eslint__js": "^9.14.0",
+    "eslint": "^9.25.1",
+    "typescript-eslint": "^8.31.1"
+  },
+  "scripts": {
+    "dev": "bun run index.js",
+    "build": "echo build"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/ws": "^8.18.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "sdp-transform": "^2.15.0",
+    "socket.io": "^4.8.1",
+    "ws": "^8.18.1",
+    "zod": "^3.24.3"
+  }
+}
