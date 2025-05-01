@@ -13,6 +13,8 @@ const viewers = new Map<string, Viewer>();
 
 console.log("Starting siglaing server on 8080 port")
 
+console.assert(JWT_SECRET)
+
 Bun.serve({
 	port: 8080,
 	async fetch(req, server) {
