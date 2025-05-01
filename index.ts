@@ -64,8 +64,9 @@ Bun.serve({
 					} catch (err) {
 						ws.send(JSON.stringify({
 							type: 'error',
-							msg: 'Invalid JWT'
+							msg: `nvalid JWT ${err}`,
 						}))
+						return;
 					}
 
 					peerToId.set(ws, data.uuid);
