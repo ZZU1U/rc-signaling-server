@@ -19,7 +19,7 @@ console.assert(JWT_SECRET)
 
 const update_car_status = async (id, status) => {
 	const response = await fetch(`${SERVER_URL}/car`, {
-	  method: "UPDATE",
+	  method: "PUT",
 	  body: JSON.stringify({ id, is_one: status }),
 	  headers: { "Content-Type": "application/json", "Authorization": `Bearer: ${SERVICE_JWT}` },
 	});
