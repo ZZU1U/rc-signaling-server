@@ -5,7 +5,9 @@ import { type Viewer, type Streamer, MessageSchema } from './schemas';
 //import * as sdpTransform from 'sdp-transform';
 dotenv.config()
 
-const JWT_SECRET = process.env.JWT_SECRET!;
+const JWT_SECRET = process.env.JWT_SECRET;
+const SERVER_URL = process.env.SERVER_URL;
+const SERVICE_JWT = process.env.SERVICE_JWT;
 
 const peerToId = new Map<Bun.ServerWebSocket<unknown>, string>();
 const streamers = new Map<string, Streamer>();
@@ -15,9 +17,21 @@ console.log("Starting siglaing server on 8080 port")
 
 console.assert(JWT_SECRET)
 
+const update_car_status = async (id, status) => {
+	const response = await fetch(`${SERVER_URL}/car`, {
+	  method: "UPDATE",
+	  body: JSON.stringify({ id, is_one: status }),
+	  headers: { "Content-Type": "application/json", "Authorization": `Bearer: ${SERVICE_JWT}` },
+	});
+
+	const body = await response.json();
+
+	console.log(body)
+}
+
 Bun.serve({
 	port: 8080,
-	async fetch(req, server) {
+	fetch(req, server) {
 		const url = new URL(req.url);
 
 		// Handle WebSocket upgrade
@@ -52,14 +66,14 @@ Bun.serve({
 			const data = result.data;
 
 
-			switch (data?.type) {
+			switch (data.type) {
 				case 'register': {
 					let payload: jwt.JwtPayload;
 					try {
 						payload = jwt.verify(data.jwt, JWT_SECRET);
 
 						if (payload.sub !== data.uuid) 
-							throw Error
+							throw Error()
 
 						// TODO also check users to be viewers and cars to be streamers
 						// (turned off for debug purpose)
@@ -82,6 +96,7 @@ Bun.serve({
 								viewer: null,
 							}
 						)
+						await update_car_status(data.uuid, true)
 					} else {
 						viewers.set(
 							data.uuid,
@@ -97,7 +112,7 @@ Bun.serve({
 					break;
 				}
 				case 'offer': {
-					let viewer = viewers.get(data.uuid)!
+					const viewer = viewers.get(data.uuid)
 
 					if (!viewer) {
 						ws.send(JSON.stringify({
@@ -115,7 +130,7 @@ Bun.serve({
 						return;
 					}
 
-					let streamer = streamers.get(data.to)
+					const streamer = streamers.get(data.to)
 
 					if (!streamer) {
 						ws.send(JSON.stringify({
@@ -198,7 +213,7 @@ Bun.serve({
 			//console.log(streamers, viewers);
 		}, // a message is received
 		async open(ws) {
-			console.log("Connected new fwiend")
+			console.log(`Connected new fwiend`)
 			console.log(`streamers: ${streamers.keys().toArray()}`)
 			console.log(`viewers: ${viewers.keys().toArray()}`)
 		}, // a socket is opened
@@ -228,6 +243,7 @@ Bun.serve({
 
 			if (streamer) {
 				streamers.delete(uuid);
+				await update_car_status(uuid, false);
 				if (streamer.viewer) {
 					const viewer = viewers.get(streamer.viewer);
 					if (viewer) {
