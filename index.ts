@@ -20,13 +20,12 @@ console.assert(JWT_SECRET)
 const update_car_status = async (id, status) => {
 	const response = await fetch(`${SERVER_URL}/car`, {
 	  method: "PUT",
-	  body: JSON.stringify({ id, is_one: status }),
-	  headers: { "Content-Type": "application/json", "Authorization": `Bearer: ${SERVICE_JWT}` },
+	  body: JSON.stringify({ id, is_on: status }),
+	  headers: { "Content-Type": "application/json", "Authorization": `Bearer ${SERVICE_JWT}` },
 	});
 
-	const body = await response.json();
 
-	console.log(body)
+	const body = await response.json();
 }
 
 Bun.serve({
@@ -208,14 +207,10 @@ Bun.serve({
 					break;
 				}
 			}
-			console.log(`streamers: ${streamers.keys().toArray()}`)
-			console.log(`viewers: ${viewers.keys().toArray()}`)
 			//console.log(streamers, viewers);
 		}, // a message is received
 		async open(ws) {
 			console.log(`Connected new fwiend`)
-			console.log(`streamers: ${streamers.keys().toArray()}`)
-			console.log(`viewers: ${viewers.keys().toArray()}`)
 		}, // a socket is opened
 		async close(ws, code, message) {
 			console.log("We lost one friend")
